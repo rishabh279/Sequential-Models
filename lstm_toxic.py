@@ -16,14 +16,14 @@ BATCH_SIZE = 128
 EPOCHS = 1
 
 word2vec = {}
-with open('glove.6B.100d.txt') as f:
+with open('data/glove.6B.100d.txt') as f:
     for line in f:
         values = line.split()
         word = values[0]
         vec = np.asarray(values[1:], dtype='float32')
         word2vec[word] = vec
 
-train = pd.read_csv('train.csv')
+train = pd.read_csv('data/train.csv')
 sentences = train['comment_text'].fillna('DUMMY_VALUE').values
 possible_labels = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 targets = train[possible_labels].values
@@ -57,7 +57,7 @@ embedding_layer = Embedding(
 
 input = Input(shape=(MAX_SEQUENCE_LENGTH,))
 x = embedding_layer(input)
-x = LSTM(15, return_sequences=True)(x)
+x = Bidirectional(LSTM(15, return_sequences=True))(x)
 x = GlobalMaxPool1D()(x)
 output = Dense(len(possible_labels), activation='sigmoid')(x)
 
